@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie 导出器</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="header">
+    <h1 class="title">🍪 Cookie 导出器</h1>
+    <button id="refresh-btn" class="icon-btn" title="重新获取">↻</button>
+  </header>
+
+  <div class="meta">
+    <span id="origin" class="origin">读取中…</span>
+    <span id="count" class="count"></span>
+  </div>
+
+  <textarea id="cookie-output" class="output" readonly placeholder="正在读取当前页面的 Cookie…"></textarea>
+
+  <div class="actions">
+    <button id="copy-btn" class="primary-btn" disabled>复制到剪贴板</button>
+  </div>
+
+  <p id="status" class="status"></p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

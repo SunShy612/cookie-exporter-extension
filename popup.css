@@ -1,0 +1,125 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 360px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  background: #f7f8fa;
+  color: #1f2329;
+  padding: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  color: #646a73;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.icon-btn:hover {
+  background: #e8eaed;
+  color: #1f2329;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #646a73;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.origin {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.count {
+  flex-shrink: 0;
+}
+
+.output {
+  width: 100%;
+  height: 160px;
+  resize: vertical;
+  border: 1px solid #dee0e3;
+  border-radius: 6px;
+  padding: 8px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  background: #fff;
+  color: #1f2329;
+  word-break: break-all;
+}
+
+.output:focus {
+  outline: none;
+  border-color: #3370ff;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 9px;
+  border: none;
+  border-radius: 6px;
+  background: #3370ff;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: #2860e1;
+}
+
+.primary-btn:disabled {
+  background: #c4c9d1;
+  cursor: not-allowed;
+}
+
+.primary-btn.copied {
+  background: #2ea121;
+}
+
+.status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #646a73;
+  min-height: 16px;
+  text-align: center;
+}
+
+.status.error {
+  color: #e02f2f;
+}

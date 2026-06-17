@@ -1,0 +1,11 @@
+# OS / 编辑器
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# 打包产物
+*.zip
+*.crx
+*.pem

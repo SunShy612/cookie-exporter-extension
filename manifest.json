@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Cookie 导出器",
+  "version": "1.0.0",
+  "description": "一键查看并复制当前页面的全部 Cookie（含 HttpOnly），方便接口调试。数据仅在本地处理，不上传任何服务器。",
+  "permissions": ["cookies", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "获取当前页面 Cookie",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
