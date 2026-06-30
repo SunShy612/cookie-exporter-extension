@@ -42,17 +42,83 @@ function getActiveTab() {
   });
 }
 
-// 获取指定 URL 下的全部 cookie（含 HttpOnly）
-function getCookies(url) {
-  return new Promise((resolve, reject) => {
-    chrome.cookies.getAll({ url }, (cookies) => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message));
-        return;
-      }
-      resolve(cookies || []);
-    });
+// 去掉 cookie domain 的前导点，便于精确比较（".example.com" -> "example.com"）
+function bareDomain(domain) {
+  return (domain || "").replace(/^\./, "");
+}
+
+// 生成 hostname 的域名链：a.b.example.com -> ["a.b.example.com", "b.example.com", "example.com"]
+// 对应「浏览器向当前页发送 cookie」的域规则：cookie domain 等于 host 或为 host 的父域
+function buildDomainChain(hostname) {
+  const isIp = /^\d{1,3}(\.\d{1,3}){3}$/.test(hostname);
+  const parts = hostname.split(".");
+  if (isIp || parts.length < 2) return [hostname];
+  const chain = [];
+  for (let i = 0; i <= parts.length - 2; i++) {
+    chain.push(parts.slice(i).join("."));
+  }
+  return chain;
+}
+
+// chrome.cookies.getAll 的 Promise 封装；单次查询出错不中断整体流程（返回空数组）
+function getAllByFilter(filter) {
+  return new Promise((resolve) => {
+    try {
+      chrome.cookies.getAll(filter, (cookies) => {
+        if (chrome.runtime.lastError) {
+          resolve([]);
+          return;
+        }
+        resolve(cookies || []);
+      });
+    } catch (_) {
+      resolve([]);
+    }
   });
+}
+
+// 去重 key：同名 cookie 可能存在于不同 domain/path/分区，需全部纳入
+function cookieKey(c) {
+  const pk = c.partitionKey ? JSON.stringify(c.partitionKey) : "";
+  return `${c.name}|${bareDomain(c.domain)}|${c.path}|${pk}`;
+}
+
+// 获取当前页面可用的全部 cookie（含 HttpOnly、各级父域、所有 path、分区 cookie）
+async function getCookies(url) {
+  let hostname;
+  let origin;
+  try {
+    const u = new URL(url);
+    hostname = u.hostname;
+    origin = u.origin;
+  } catch (_) {
+    // URL 解析失败时回退到最朴素的查询
+    return getAllByFilter({ url });
+  }
+
+  const chain = buildDomainChain(hostname);
+  // 只保留恰好设在域名链各级上的 cookie，避免把兄弟子域 / 整个 TLD 的 cookie 误拉进来
+  const allowed = new Set(chain);
+  const map = new Map();
+
+  for (const domain of chain) {
+    // 1) 普通（未分区）cookie：按 domain 查，覆盖该域下所有 path
+    const normal = await getAllByFilter({ domain });
+    // 2) 分区 cookie（CHIPS / Partitioned）：best-effort，以当前站点作为 topLevelSite
+    //    老版本 Chrome 不支持 partitionKey 参数时会被 getAllByFilter 容错为空数组
+    const partitioned = await getAllByFilter({
+      domain,
+      partitionKey: { topLevelSite: origin },
+    });
+
+    for (const c of normal.concat(partitioned)) {
+      if (!allowed.has(bareDomain(c.domain))) continue;
+      const key = cookieKey(c);
+      if (!map.has(key)) map.set(key, c);
+    }
+  }
+
+  return [...map.values()];
 }
 
 function isRestricted(url) {
